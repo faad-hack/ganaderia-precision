@@ -102,6 +102,138 @@
         </div>
     </section>
 
+    <!-- Sección de Ingeniería de Software Detallada y Ecosistema Android Perimetral -->
+    <section id="arquitectura-detallada-completa" class="py-5 bg-light border-top border-bottom">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-success mb-2 px-3 py-2 text-uppercase">Documentación del Sistema</span>
+                <h2 class="fw-bold">Ingeniería del Software: Captura Biométrica y Sincronización Edge-to-Mobile</h2>
+                <p class="text-muted mx-auto" style="max-width: 850px;">
+                    Análisis arquitectónico del flujo síncrono descentralizado. Descubra cómo nuestra solución procesa el pesaje automatizado dinámico y transmite métricas críticas en milisegundos a terminales Android en entornos rurales aislados.
+                </p>
+            </div>
+
+            <!-- Módulo 1: La Estación de Captura Inteligente y Telemetría Perimetral -->
+            <div class="row align-items-center mb-5 g-4">
+                <div class="col-lg-6">
+                    <div class="pe-lg-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="bg-success text-white rounded-circle p-2 d-inline-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px; font-size: 14px;"><i class="bi bi-cpu"></i></span>
+                            <h4 class="fw-bold text-dark mb-0">1. Microprocesamiento en el Nodo Local (Gateway Edge)</h4>
+                        </div>
+                        <p class="text-muted small justify-content-text">
+                            El núcleo operativo en el establo consta de un dispositivo de cómputo perimetral industrial de bajo consumo. Este nodo corre un demonio en segundo plano (*background daemon*) desarrollado en Python que administra los hilos de comunicación de los sensores de manera asíncrona.
+                        </p>
+                        <ul class="list-unstyled text-muted small ps-2">
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Discriminación de Lecturas en Ráfaga:</strong> Cuando el ganado ingresa a la manga de manejo, la antena RFID UHF realiza cientos de lecturas por segundo. El software perimetral implementa un filtro de ventana de tiempo que descarta duplicados y "fantasmas", seleccionando únicamente el identificador con el vector de potencia más estable y cercano.</li>
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Acondicionamiento de Señal de Pesaje:</strong> El peso dinámico del animal genera ruido cinético severo en las celdas de carga. Nuestro algoritmo captura la señal analógica a alta velocidad y aplica un filtro matemático de promedio móvil ponderado. El sistema extrae el peso neto real en menos de 3 segundos, aislando por completo los saltos o pisadas bruscas del ganado.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 bg-dark text-white rounded-3 shadow-sm font-monospace" style="font-size: 13px;">
+                        <span class="text-success">// Flujo Lógico de Inicialización en Estación (Edge)</span>
+                        <div class="mt-2 text-secondary">
+                            [Antena RFID UHF] ──► (Lectura Única Hexadecimal de 96 bits)<br>
+                            [Celdas de Carga] ──► (Muestreo de Fuerza de Impacto Animal)<br>
+                            <span class="text-light">▼ Procesamiento Local de Señal (Algoritmo de Estabilización Dinámica)</span><br>
+                            [Filtro Ponderado] ──► Determina peso neto real en ≤ 3 segundos.<br>
+                            [Match Local] ──► Cruza ID con BD SQLite local (Alerta Sanitaria / Especie).<br>
+                            <span class="text-success">▼ Salida Inmediata</span><br>
+                            [Broker Interno] ──► Publica evento en red local inalámbrica.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo 2: Arquitectura de Conexión Local y App Android en Tiempo Real -->
+            <div class="row align-items-center mb-5 g-4 flex-row-reverse">
+                <div class="col-lg-6">
+                    <div class="ps-lg-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="bg-success text-white rounded-circle p-2 d-inline-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px; font-size: 14px;"><i class="bi bi-android2"></i></span>
+                            <h4 class="fw-bold text-dark mb-0">2. Ecosistema Móvil Android e Interfaz Operativa</h4>
+                        </div>
+                        <p class="text-muted small justify-content-text">
+                            El operario en el campo ejecuta una aplicación nativa para Android optimizada para el rendimiento en hardware de gama media y tabletas industriales de alta resistencia. El corazón de esta aplicación es su capacidad de respuesta instantánea con **cero latencia de red externa**.
+                        </p>
+                        <ul class="list-unstyled text-muted small ps-2">
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Protocolo de Comunicación WebSocket Local:</strong> El nodo físico del establo actúa como un servidor Web de red de área local (WLAN). La aplicación Android establece una conexión persistente mediante WebSockets a través de un router local. Cada evento de pesaje se "empuja" de forma síncrona al teléfono en milisegundos.</li>
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Cálculo Automático del ADG y Alertas Visuales:</strong> Al recibir el payload de datos, la aplicación calcula localmente la Ganancia Diaria Promedio (ADG) comparando el registro con los pesajes históricos almacenados en su base de datos interna. Si el rendimiento cae por debajo de la curva esperada, la interfaz cambia a un estado de alerta crítico (rojo brillante), ordenando al operario apartar al animal para revisión veterinaria.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 bg-white rounded-3 border shadow-sm">
+                        <h6 class="fw-bold text-dark mb-3 text-uppercase" style="font-size: 12px; letter-spacing: 1px;"><i class="bi bi-display me-2 text-success"></i>Pantalla de Captura Android (Simulación Funcional)</h6>
+                        <div class="border rounded p-3 bg-light">
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <span class="badge bg-dark font-monospace">TAG: E20041067301</span>
+                                <span class="badge bg-success"><i class="bi bi-wifi me-1"></i> Conectado a Nodo Establo</span>
+                            </div>
+                            <div class="row text-center py-2">
+                                <div class="col-6 border-end">
+                                    <span class="text-uppercase text-muted" style="font-size: 10px; d-block;">Peso Dinámico</span>
+                                    <h3 class="fw-bold text-dark mb-0">420.5 kg</h3>
+                                </div>
+                                <div class="col-6 text-danger">
+                                    <span class="text-uppercase text-muted" style="font-size: 10px; d-block;">Rendimiento (ADG)</span>
+                                    <h3 class="fw-bold mb-0">-12%</h3>
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mb-0 mt-2 p-2 small border-0 text-center fw-bold">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> ALERTA: Pérdida de Peso Detectada. Desviar Animal.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo 3: Sincronización Diferida (Offline-First) Hacia la Nube -->
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6">
+                    <div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="bg-success text-white rounded-circle p-2 d-inline-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px; font-size: 14px;"><i class="bi bi-cloud-arrow-up"></i></span>
+                            <h4 class="fw-bold text-dark mb-0">3. Persistencia de Datos y Sincronización Asíncrona Cloud</h4>
+                        </div>
+                        <p class="text-muted small justify-content-text">
+                            La consistencia e integridad de los datos está completamente protegida frente a cortes de energía eléctrica o pérdidas totales de señal. La arquitectura implementa un modelo de **Sincronización Diferida basada en Estados**.
+                        </p>
+                        <ul class="list-unstyled text-muted small ps-2">
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Cola de Mensajes Persistente Local:</strong> Si la locación carece de conexión a internet, tanto el Gateway del establo como el dispositivo Android resguardan las transacciones en colas relacionales locales cifradas, utilizando indicadores lógicos de estado (*is_synced = false*).</li>
+                            <li class="mb-2"><i class="bi bi-caret-right-fill text-success me-1"></i><strong>Consolidación Automatizada en Lotes (Bulk Sync):</strong> Un servicio worker en segundo plano comprueba de forma iterativa el acceso al API central en la nube. En cuanto el dispositivo detecta conectividad Wi-Fi de banda ancha o cobertura móvil en la oficina administrativa, realiza una petición HTTP estructurada enviando los lotes compactados en JSON, actualizando las bases de datos de la gerencia sin duplicidades y asegurando la consistencia e integridad total del sistema.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 bg-dark text-white rounded-3 shadow-sm">
+                        <h5 class="fw-bold text-success mb-3 fs-6"><i class="bi bi-diagram-3 me-2"></i>Arquitectura del Ecosistema Descentralizado</h5>
+                        <div class="row text-center font-monospace small g-2">
+                            <div class="col-12 bg-secondary bg-opacity-10 p-2 rounded border border-secondary border-opacity-20 mb-1">
+                                <span class="d-block text-success fw-bold">CAPA CLOUD (Analítica Centralizada / API FastAPI)</span>
+                                <span class="text-muted style-code" style="font-size: 11px;">Consolidación de Métricas de Margen Financiero y ROI Global</span>
+                            </div>
+                            <div class="col-12 my-1 text-muted text-center"><i class="bi bi-arrow-down-up"></i> (Sincronización por Lotes cuando detecta Internet)</div>
+                            <div class="col-md-5 bg-secondary bg-opacity-20 p-3 rounded">
+                                <span class="d-block text-white fw-bold">NODO GATEWAY ESTABLO</span>
+                                <span class="text-secondary" style="font-size: 10px;">Captura RFID + Balanzas<br>Persistencia en SQLite Local</span>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center justify-content-center my-2 my-md-0">
+                                <span class="badge bg-success px-2 py-1" style="font-size: 10px;">WLAN LOCAL<br>WebSockets</span>
+                            </div>
+                            <div class="col-md-5 bg-secondary bg-opacity-20 p-3 rounded">
+                                <span class="d-block text-white fw-bold">APP MÓVIL ANDROID</span>
+                                <span class="text-success" style="font-size: 10px;">Visualización en Tiempo Real<br>Cálculo de ADG Perimetral</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <!-- Sección de Tecnología y Operación -->
     <section id="tecnologia" class="py-5">
         <div class="container">
